@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Google Google - IPL 2026 Fantasy Leaderboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&display=swap"
+    rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <style>
+    /* ── RESET & BASE ─────────────────────────────────────────── */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --navy: #0f1b3d;
+      --navy2: #1a2d5a;
+      --gold: #f5b800;
+      --gold2: #e09600;
+      --red: #d42b2b;
+      --cream: #fdf6e3;
+      --muted: #8a96b0;
+      --border: rgba(245, 184, 0, 0.18);
+      --card: rgba(255, 255, 255, 0.04);
+      --font-head: 'Barlow Condensed', sans-serif;
+      --font-body: 'Barlow', sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--navy);
+      color: #e8eaf6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── BACKGROUND PATTERN ──────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-image:
+        radial-gradient(circle at 15% 20%, rgba(245, 184, 0, 0.07) 0%, transparent 45%),
+        radial-gradient(circle at 85% 80%, rgba(212, 43, 43, 0.06) 0%, transparent 45%);
+      pointer-events: none;
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* ── HEADER ──────────────────────────────────────────────── */
+    header {
+      background: linear-gradient(135deg, #0a1228 0%, #1a2d5a 100%);
+      border-bottom: 2px solid var(--gold);
+      padding: 0;
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 1.5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .logo-block {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .trophy-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, var(--gold), var(--gold2));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+      box-shadow: 0 0 20px rgba(245, 184, 0, 0.4);
+    }
+
+    .logo-text h1 {
+      font-family: var(--font-head);
+      font-size: 1.7rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: var(--gold);
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    .logo-text p {
+      font-size: 0.8rem;
+      color: var(--muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 3px;
+    }
+
+    .header-meta {
+      text-align: right;
+    }
+
+    .header-meta .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(212, 43, 43, 0.15);
+      border: 1px solid rgba(212, 43, 43, 0.4);
+      color: #ff6b6b;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #ff4444;
+      animation: pulse 1.4s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.3;
+      }
+    }
+
+    .last-updated {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    /* ── NAV TABS ─────────────────────────────────────────────── */
+    .nav-tabs {
+      background: rgba(0, 0, 0, 0.25);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-tabs-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      display: flex;
+      gap: 0;
+    }
+
+    .tab-btn {
+      padding: 0.85rem 1.4rem;
+      font-family: var(--font-head);
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted);
+      border-bottom: 3px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .tab-btn.active,
+    .tab-btn:hover {
+      color: var(--gold);
+      border-bottom-color: var(--gold);
+    }
+
+    /* ── MAIN LAYOUT ─────────────────────────────────────────── */
+    main {
+      padding: 2rem 0 3rem;
+    }
+
+    .section {
+      display: none;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section.active {
+      display: block;
+      animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* ── STAT CARDS ───────────────────────────────────────────── */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+      border-radius: 12px;
+      padding: 1.1rem 1.25rem;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .stat-card:hover {
+      border-color: rgba(245, 184, 0, 0.5);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px 0 rgba(245, 184, 0, 0.15);
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-family: var(--font-head);
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: var(--gold);
+      line-height: 1;
+    }
+
+    .stat-sub {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* ── STANDINGS TABLE ─────────────────────────────────────── */
+    .standings-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    }
+
+    .card-header {
+      padding: 1rem 1.5rem;
+      background: rgba(0, 0, 0, 0.2);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-title {
+      font-family: var(--font-head);
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      padding: 0.7rem 1rem;
+      font-family: var(--font-head);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    thead th.num {
+      text-align: center;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      transition: background 0.2s ease;
+    }
+
+    tbody tr:hover {
+      background: rgba(245, 184, 0, 0.1);
+      z-index: 1;
+      position: relative;
+    }
+
+    tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    tbody tr.rank-1 {
+      background: linear-gradient(90deg, rgba(245, 184, 0, 0.05) 0%, transparent 100%);
+    }
+
+    td {
+      padding: 0.75rem 1rem;
+      font-size: 0.92rem;
+      color: #c8cfe8;
+      text-align: center;
+    }
+
+    td.num {
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .rank-cell {
+      font-family: var(--font-head);
+      font-weight: 800;
+      font-size: 1rem;
+    }
+
+    .rank-1 .rank-cell {
+      color: #ffd700;
+    }
+
+    .rank-2 .rank-cell {
+      color: #c0c0c0;
+    }
+
+    .rank-3 .rank-cell {
+      color: #cd7f32;
+    }
+
+    .medal {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      font-size: 0.78rem;
+      font-weight: 800;
+      font-family: var(--font-head);
+    }
+
+    .medal-1 {
+      background: rgba(255, 215, 0, 0.15);
+      color: #ffd700;
+      border: 1px solid rgba(255, 215, 0, 0.35);
+    }
+
+    .medal-2 {
+      background: rgba(192, 192, 192, 0.12);
+      color: #c0c0c0;
+      border: 1px solid rgba(192, 192, 192, 0.3);
+    }
+
+    .medal-3 {
+      background: rgba(205, 127, 50, 0.12);
+      color: #cd7f32;
+      border: 1px solid rgba(205, 127, 50, 0.3);
+    }
+
+    .medal-n {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--muted);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .player-name {
+      font-weight: 600;
+      color: #e8eaf6;
+    }
+
+    .pts-badge {
+      display: inline-block;
+      background: rgba(245, 184, 0, 0.12);
+      color: var(--gold);
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .rank-1 .pts-badge {
+      background: rgba(255, 215, 0, 0.18);
+      color: #ffd700;
+    }
+
+    .gap-cell {
+      color: var(--red);
+      font-size: 0.85rem;
+    }
+
+    .gap-leader {
+      color: var(--muted);
+    }
+
+    .avg-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 120px;
+    }
+
+    .avg-bar-bg {
+      flex: 1;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .avg-bar-fill {
+      height: 100%;
+      background: var(--gold);
+      border-radius: 3px;
+      transition: width 0.6s ease;
+    }
+
+    .avg-val {
+      font-size: 0.82rem;
+      color: var(--muted);
+      min-width: 44px;
+      text-align: right;
+    }
+
+    /* ── CHARTS SECTION ──────────────────────────────────────── */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (max-width: 700px) {
+      .charts-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .chart-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .chart-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
+    }
+
+    .chart-body {
+      padding: 1rem 1.25rem 1.25rem;
+    }
+
+    /* ── LOADING & ERROR ─────────────────────────────────────── */
+    .loader-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 4rem 2rem;
+      gap: 1rem;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 3px solid rgba(245, 184, 0, 0.15);
+      border-top-color: var(--gold);
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .loader-text {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .error-box {
+      background: rgba(212, 43, 43, 0.1);
+      border: 1px solid rgba(212, 43, 43, 0.3);
+      border-radius: 12px;
+      padding: 1.5rem;
+      color: #ff8080;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .error-box code {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.85rem;
+    }
+
+    /* ── CONFIG BANNER ───────────────────────────────────────── */
+    .config-banner {
+      background: rgba(245, 184, 0, 0.08);
+      border: 1px solid rgba(245, 184, 0, 0.25);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      font-size: 0.85rem;
+      color: #d4b96a;
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .config-banner strong {
+      color: var(--gold);
+    }
+
+    .config-banner code {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.82rem;
+      color: #ffe066;
+    }
+
+    /* ── FOOTER ──────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.25rem 1.5rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    /* ── RESPONSIVE ───────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      .header-inner {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+
+      .header-meta {
+        text-align: center;
+      }
+
+      .stat-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .avg-bar-wrap {
+        display: none;
+      }
+
+      td.hide-sm {
+        display: none;
+      }
+
+      th.hide-sm {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ── HEADER ─────────────────────────────────────────────── -->
+  <header>
+    <div class="header-inner">
+      <div class="logo-block">
+        <div class="trophy-icon">🏆</div>
+        <div class="logo-text">
+          <h1>Google Google - IPL 2026 Fantasy</h1>
+          <p>Season Leaderboard</p>
+        </div>
+      </div>
+      <div class="header-meta">
+        <div class="live-badge"><span class="live-dot"></span> Live</div>
+        <div class="last-updated" id="lastUpdated">Fetching data…</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── NAV TABS ───────────────────────────────────────────── -->
+  <nav class="nav-tabs">
+    <div class="nav-tabs-inner">
+      <button class="tab-btn active" onclick="switchTab('standings')">🏅 Standings</button>
+      <button class="tab-btn" onclick="switchTab('charts')">📊 Charts</button>
+    </div>
+  </nav>
+
+  <!-- ── MAIN ───────────────────────────────────────────────── -->
+  <main>
+    <div class="wrap">
+
+      <!-- CONFIG BANNER (shown until user sets Sheet ID) -->
+      <div class="config-banner" id="configBanner">
+        <strong>Setup:</strong> Open this file and set your Google Sheet ID in the
+        <code>SHEET_ID</code> variable at the top of the <code>&lt;script&gt;</code>.
+        Your Sheet must be shared as <em>"Anyone with the link can view"</em>.<br>
+        Sheet ID is the long string in your Sheet URL:
+        <code>docs.google.com/spreadsheets/d/<strong>YOUR_SHEET_ID_HERE</strong>/edit</code>
+      </div>
+
+      <!-- STANDINGS TAB -->
+      <div class="section active" id="tab-standings">
+        <div id="standingsContent">
+          <div class="loader-wrap">
+            <div class="spinner"></div>
+            <div class="loader-text">Loading standings…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHARTS TAB -->
+      <div class="section" id="tab-charts">
+        <div id="chartsContent">
+          <div class="loader-wrap">
+            <div class="spinner"></div>
+            <div class="loader-text">Loading charts…</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <div>Google Google - IPL 2026 Fantasy League &nbsp;·&nbsp; crafted by @RejoRaina3</div>
+  </footer>
+
+  <script src="env.js"></script>
+  <script>
+    let chartInstances = {};
+    let leaderboardData = [];
+
+    // ── Tab switching ─────────────────────────────────────────
+    function switchTab(name) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-' + name).classList.add('active');
+      event.currentTarget.classList.add('active');
+      if (name === 'charts' && leaderboardData.length) renderCharts(leaderboardData);
+    }
+
+    // ── Fetch from Google Sheets (CSV export — no CORS issues) ───
+    async function fetchSheetData() {
+      if (SHEET_ID === 'YOUR_GOOGLE_SHEET_ID_HERE') {
+        renderError('standingsContent',
+          'Please set your <code>SHEET_ID</code> in the script config at the top of this HTML file.');
+        renderError('chartsContent', 'Configure SHEET_ID first.');
+        return;
+      }
+
+      document.getElementById('configBanner').style.display = 'none';
+
+      // Route through allorigins proxy to bypass CORS restriction on GitHub Pages
+      const sheetUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
+      const url = `https://api.allorigins.win/raw?url=${encodeURIComponent(sheetUrl)}`;
+
+      try {
+        // Try primary proxy, fall back to secondary if it fails
+        let res = await fetch(url).catch(() => null);
+        if (!res || !res.ok) {
+          const fallbackUrl = `https://corsproxy.io/?${encodeURIComponent(sheetUrl)}`;
+          res = await fetch(fallbackUrl);
+        }
+        if (!res.ok) throw new Error(`Request failed (${res.status}). Make sure your sheet is shared as public — Google Sheet → Share → Anyone with the link → Viewer.`);
+        const text = await res.text();
+
+        // Parse CSV
+        const lines = text.trim().split('\n').map(l => parseCSVLine(l));
+        const headers = lines[0];
+
+        const nameIdx = headers.findIndex(h => h.trim() === 'Name');
+        const tpIdx = headers.findIndex(h => h.trim() === 'Total Points');
+        const apIdx = headers.findIndex(h => h.trim() === 'Average Points');
+
+        if (nameIdx < 0 || tpIdx < 0) throw new Error('Could not find "Name" or "Total Points" columns. Check your sheet tab name matches SHEET_NAME in the config.');
+
+        // Extract players with data
+        const players = lines.slice(1)
+          .map(row => ({
+            name: row[nameIdx]?.trim() || '',
+            total: parseFloat(row[tpIdx]?.replace(/,/g, '') || 0),
+            avg: parseFloat(row[apIdx]?.replace(/,/g, '') || 0),
+            played: countPlayedCSV(row, headers),
+          }))
+          .filter(p => p.name && p.total > 0)
+          .sort((a, b) => b.total - a.total || b.avg - a.avg);
+
+        leaderboardData = players;
+
+        document.getElementById('lastUpdated').textContent =
+          'Updated ' + new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+
+        renderStandings(players);
+        renderCharts(players);
+
+      } catch (err) {
+        console.error(err);
+        renderError('standingsContent', err.message);
+        renderError('chartsContent', err.message);
+      }
+    }
+
+    // Robust CSV line parser (handles commas inside quoted fields)
+    function parseCSVLine(line) {
+      const result = []; let cur = ''; let inQ = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') { inQ = !inQ; }
+        else if (ch === ',' && !inQ) { result.push(cur); cur = ''; }
+        else { cur += ch; }
+      }
+      result.push(cur);
+      return result;
+    }
+
+    // Count non-empty match columns (exclude meta columns)
+    function countPlayedCSV(row, headers) {
+      const skip = new Set(['S/no', 'Name', 'Total Points', 'Average Points', '_SortKey',
+        'Qualifier 1', 'Eliminator', 'Qualifier 2', 'Final']);
+      let n = 0;
+      headers.forEach((h, i) => {
+        if (!skip.has(h.trim()) && row[i]?.trim() !== '') n++;
+      });
+      return n;
+    }
+
+    // ── Render Standings ──────────────────────────────────────
+    function renderStandings(players) {
+      const leader = players[0]?.total || 0;
+      const maxAvg = Math.max(...players.map(p => p.avg));
+
+      // Stat cards
+      const statsHTML = `
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-label">Leader</div>
+        <div class="stat-value" style="font-size:1.4rem;">${players[0]?.name || '—'}</div>
+        <div class="stat-sub">${leader.toLocaleString()} pts</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Players</div>
+        <div class="stat-value">${players.length}</div>
+        <div class="stat-sub">Active this season</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Best Average</div>
+        <div class="stat-value">${maxAvg.toFixed(1)}</div>
+        <div class="stat-sub">${players.find(p => p.avg === maxAvg)?.name || ''}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Closest Gap</div>
+        <div class="stat-value">${players.length > 1 ? (leader - players[1].total).toFixed(1) : '—'}</div>
+        <div class="stat-sub">1st vs 2nd</div>
+      </div>
+    </div>`;
+
+      // Table
+      const rowsHTML = players.map((p, i) => {
+        const rank = i + 1;
+        const gap = rank === 1 ? '—' : '-' + (leader - p.total).toFixed(1);
+        const barPct = maxAvg > 0 ? (p.avg / maxAvg * 100).toFixed(1) : 0;
+        const rankClass = rank <= 3 ? `rank-${rank}` : '';
+        const medalClass = rank <= 3 ? `medal-${rank}` : 'medal-n';
+
+        return `<tr class="${rankClass}">
+      <td><span class="medal ${medalClass}">${rank}</span></td>
+      <td><span class="player-name">${p.name}</span></td>
+      <td class="num"><span class="pts-badge">${p.total.toLocaleString()}</span></td>
+      <td class="num hide-sm">${p.played}</td>
+      <td class="num hide-sm">
+        <div class="avg-bar-wrap">
+          <div class="avg-bar-bg"><div class="avg-bar-fill" style="width:${barPct}%"></div></div>
+          <span class="avg-val">${p.avg.toFixed(1)}</span>
+        </div>
+      </td>
+      <td class="num gap-cell ${rank === 1 ? 'gap-leader' : ''}">${gap}</td>
+    </tr>`;
+      }).join('');
+
+      document.getElementById('standingsContent').innerHTML = statsHTML + `
+    <div class="standings-card">
+      <div class="card-header">
+        <span class="card-title">Season Standings</span>
+        <span style="font-size:0.78rem;color:var(--muted);">${players.length} players</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Player</th>
+              <th class="num">Total Pts</th>
+              <th class="num hide-sm">Played</th>
+              <th class="num hide-sm">Avg / Match</th>
+              <th class="num">Gap</th>
+            </tr>
+          </thead>
+          <tbody>${rowsHTML}</tbody>
+        </table>
+      </div>
+    </div>`;
+    }
+
+    // ── Render Charts ─────────────────────────────────────────
+    function renderCharts(players) {
+      // Destroy old instances
+      Object.values(chartInstances).forEach(c => c.destroy());
+      chartInstances = {};
+
+      const names = players.map(p => p.name);
+      const totals = players.map(p => p.total);
+      const avgs = players.map(p => parseFloat(p.avg.toFixed(1)));
+
+      // Color palette: gold for top 3, navy-blue for rest
+      const barColors = players.map((_, i) =>
+        i === 0 ? '#ffd700' : i === 1 ? '#c0c0c0' : i === 2 ? '#cd7f32' : '#3a5a9b'
+      );
+
+      document.getElementById('chartsContent').innerHTML = `
+    <div class="charts-grid">
+      <div class="chart-card" style="grid-column: 1 / -1;">
+        <div class="card-header"><span class="card-title">Total Points — Full Standings</span></div>
+        <div class="chart-body">
+          <div style="position:relative; width:100%; height:${Math.max(300, players.length * 38)}px;">
+            <canvas id="chartBar"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="card-header"><span class="card-title">Average Points / Match</span></div>
+        <div class="chart-body">
+          <div style="position:relative; width:100%; height:${Math.max(260, players.length * 28)}px;">
+            <canvas id="chartAvg"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="card-header"><span class="card-title">Points Distribution</span></div>
+        <div class="chart-body">
+          <div style="position:relative; width:100%; height:280px;">
+            <canvas id="chartDoughnut"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+      const gridColor = 'rgba(255,255,255,0.06)';
+      const tickColor = '#8a96b0';
+      const baseOpts = (isHoriz) => ({
+        indexAxis: isHoriz ? 'y' : 'x',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }, tooltip: {
+            backgroundColor: '#0f1b3d',
+            borderColor: 'rgba(245,184,0,0.3)', borderWidth: 1,
+            titleColor: '#f5b800', bodyColor: '#c8cfe8',
+            padding: 10, cornerRadius: 8,
+          }
+        },
+        scales: {
+          x: { grid: { color: gridColor }, ticks: { color: tickColor, font: { family: 'Barlow' } } },
+          y: { grid: { color: gridColor }, ticks: { color: tickColor, font: { family: 'Barlow', size: 12 } } },
+        }
+      });
+
+      // 1. Horizontal bar — total points
+      chartInstances.bar = new Chart(document.getElementById('chartBar'), {
+        type: 'bar',
+        data: {
+          labels: names,
+          datasets: [{ data: totals, backgroundColor: barColors, borderRadius: 4, borderSkipped: false }]
+        },
+        options: {
+          ...baseOpts(true),
+          plugins: {
+            ...baseOpts(true).plugins,
+            tooltip: {
+              ...baseOpts(true).plugins.tooltip,
+              callbacks: { label: ctx => ' ' + ctx.parsed.x.toLocaleString() + ' pts' }
+            }
+          },
+          scales: {
+            ...baseOpts(true).scales,
+            x: {
+              ...baseOpts(true).scales.x, ticks: {
+                ...baseOpts(true).scales.x.ticks,
+                callback: v => v.toLocaleString()
+              }
+            }
+          }
+        }
+      });
+
+      // 2. Avg per match — horizontal bar (sorted by avg)
+      const avgSorted = [...players].sort((a, b) => b.avg - a.avg);
+      chartInstances.avg = new Chart(document.getElementById('chartAvg'), {
+        type: 'bar',
+        data: {
+          labels: avgSorted.map(p => p.name),
+          datasets: [{
+            data: avgSorted.map(p => p.avg),
+            backgroundColor: avgSorted.map((_, i) => i < 3 ? '#f5b800' : '#3a5a9b'),
+            borderRadius: 4, borderSkipped: false
+          }]
+        },
+        options: {
+          ...baseOpts(true),
+          plugins: {
+            ...baseOpts(true).plugins,
+            tooltip: {
+              ...baseOpts(true).plugins.tooltip,
+              callbacks: { label: ctx => ' ' + ctx.parsed.x.toFixed(1) + ' avg' }
+            }
+          }
+        }
+      });
+
+      // 3. Doughnut — share of total points
+      const doughnutColors = [
+        '#ffd700', '#c0c0c0', '#cd7f32', '#3a5a9b', '#2e4a82',
+        '#5b7ec5', '#f5b800', '#e09600', '#a0b4d8', '#7a90c0',
+        '#6080b8', '#4a6aa8', '#8a96b0', '#d42b2b', '#b02020',
+      ];
+      chartInstances.donut = new Chart(document.getElementById('chartDoughnut'), {
+        type: 'doughnut',
+        data: {
+          labels: names,
+          datasets: [{
+            data: totals, backgroundColor: doughnutColors.slice(0, players.length),
+            borderColor: '#0f1b3d', borderWidth: 2, hoverOffset: 8
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          cutout: '60%',
+          plugins: {
+            legend: {
+              display: true, position: 'right',
+              labels: {
+                color: '#8a96b0', font: { family: 'Barlow', size: 11 },
+                padding: 10, boxWidth: 12, boxHeight: 12
+              }
+            },
+            tooltip: {
+              backgroundColor: '#0f1b3d', borderColor: 'rgba(245,184,0,0.3)', borderWidth: 1,
+              titleColor: '#f5b800', bodyColor: '#c8cfe8', padding: 10, cornerRadius: 8,
+              callbacks: {
+                label: ctx => {
+                  const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                  const pct = ((ctx.parsed / total) * 100).toFixed(1);
+                  return ` ${ctx.parsed.toLocaleString()} pts (${pct}%)`;
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // ── Error renderer ────────────────────────────────────────
+    function renderError(id, msg) {
+      document.getElementById(id).innerHTML = `
+    <div class="error-box">
+      <strong>Could not load data</strong><br>${msg}<br><br>
+      <strong>Steps to fix:</strong><br>
+      1. Open your Google Sheet → Share → <em>Anyone with the link</em> → Viewer<br>
+      2. Copy the Sheet ID from the URL and paste it into the <code>SHEET_ID</code> variable in this file
+    </div>`;
+    }
+
+    // ── Boot ─────────────────────────────────────────────────
+    fetchSheetData();
+    // Auto-refresh every 5 minutes
+    setInterval(fetchSheetData, 5 * 60 * 1000);
+  </script>
+</body>
+
+</html>
